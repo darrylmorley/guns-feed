@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Gun {
+  id                  String   @id
+  guntrader_id        String   @unique
+  is_new              Boolean
+  type                String
+  certification_type  String
+  mechanism           String
+  make                String
+  model               String
+  model2              String?
+  name                String
+  description         String
+  calibre             String
+  stock_number        String   @unique
+  serial_number       String
+  year_of_manufacture Int?
+  country_of_origin   String?
+  guntrader_url       String
+  price               Int
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime
+  barrel_dimensions   String?
+  choke               String?
+  choke2              String?
+  orientation         String?
+  stock_dimensions    String?
+  trigger             String?
+  Image               Image[]
+}
+
+model Image {
+  id               String   @id
+  guntrader_id     String   @unique
+  gun_id           String
+  guntrader_gun_id String
+  small_url        String?
+  medium_url       String?
+  large_url        String?
+  original_url     String?
+  is_primary       Boolean
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime
+  Gun              Gun      @relation(fields: [gun_id], references: [id], onDelete: Cascade)
+}
