@@ -1,10 +1,15 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import prisma from "./lib/db.js";
+import { logger } from "hono/logger";
 
 const app = new Hono();
 
 const accessToken = process.env.ACCESS_TOKEN;
+
+const customPrintFunc = (info: any) => {
+  console.log(info);
+};
 
 // Middleware to restrict access by access token
 app.use("*", async (c, next) => {
@@ -19,7 +24,12 @@ app.use("*", async (c, next) => {
   return c.text("Unauthorized access", 401);
 });
 
+app.use(logger(customPrintFunc));
+
 app.get("/", async (c) => {
+  const ip = c.req.header("X-Real-IP") || c.req.header("X-Forwarded-For");
+  customPrintFunc(`Connection from: ${ip}`);
+
   try {
     const items = await prisma.gun.findMany({
       include: {
